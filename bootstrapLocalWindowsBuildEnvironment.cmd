@@ -1,22 +1,12 @@
 @echo off
-
-set USERNAME=%1
-set PASSWORD=%2
-
-:: Run in Command Prompt (cmd.exe)
-:: This script will install both the Chocolately .exe file and add the
-:: choco command to your PATH variable﻿﻿
-
-@powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
-
-:: Install all the packages
-:: -y confirm yes for any prompt during the install process ﻿
-
-choco install terraform -fy
-choco install git -fy
-
+pause
+echo Enter credentials to the Viostream GitHub repository...
+set /p USERNAME= GitHub Username:
+set /p PASSWORD= GitHub Password:
+rem @powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
+rem choco install terraform -fy
+rem choco install git -fy
 mkdir tmp
 cd tmp
 git clone https://%USERNAME%:%PASSWORD%@github.com/Viostream/infrastructure
-
-:: Provision new basic AWS account and TeamCity - Ask user for input
+rem Provision new basic AWS account and TeamCity - Ask user for input
