@@ -1,7 +1,12 @@
 @echo off
+cd %TEMP%
+echo Current working directory is %CD%
+echo
 echo Enter credentials to the Viostream GitHub repository...
+echo
 set /p USERNAME= GitHub Username:
 set /p PASSWORD= GitHub Password:
+echo
 @powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
 choco install terraform -y
 choco install git -y
