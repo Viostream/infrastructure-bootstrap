@@ -1,1 +1,1 @@
-@powershell -NoProfile -ExecutionPolicy Bypass -Command 'iex ((New-Object System.Net.WebClient).DownloadFile('https://raw.githubusercontent.com/Viostream/infrastructure-bootstrap/master/start.ps1))'
+@powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/Viostream/infrastructure-bootstrap/master/start.ps1'))"
