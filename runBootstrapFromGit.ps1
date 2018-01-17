@@ -13,5 +13,6 @@ $Headers = @{
     Authorization = $basicAuthValue
 }
 
-$BootStrapScript = Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Viostream/infrastructure/master/bootstrap/bootstrapLocalWindowsBuildEnvironment.cmd' -Headers $Headers
-Invoke-Expression $($BootStrapScript.Content)
+$BootStrapScript = Invoke-WebRequest -Uri 'https://github.com/Viostream/infrastructure/blob/bootstrap1.0/bootstrap/bootstrapLocalWindowsBuildEnvironment.cmd' -Headers $Headers
+Invoke-Expression "cmd.exe /c $($BootStrapScript.Content)"
+#@powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
