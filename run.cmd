@@ -1,1 +1,1 @@
-@powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/Viostream/infrastructure-bootstrap/master/bootstrapLocalWindowsBuildEnvironment.cmd'))"
+@powershell -NoProfile -ExecutionPolicy Bypass -Command "((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/Viostream/infrastructure-bootstrap/master/bootstrapLocalWindowsBuildEnvironment.cmd')).Content|Invoke-Expression"
