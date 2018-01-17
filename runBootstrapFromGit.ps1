@@ -14,4 +14,4 @@ $Headers = @{
 }
 
 $BootStrapScript = Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Viostream/infrastructure/master/bootstrap/bootstrapLocalWindowsBuildEnvironment.cmd' -Headers $Headers
-Invoke-Expression $($BootStrapScript.Content $user $pass)
+Invoke-Expression $($BootStrapScript.Content)
