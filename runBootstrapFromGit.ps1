@@ -15,4 +15,3 @@ $Headers = @{
 
 $BootStrapScript = Invoke-WebRequest -Uri 'https://github.com/Viostream/infrastructure/blob/bootstrap1.0/bootstrap/bootstrapLocalWindowsBuildEnvironment.cmd' -Headers $Headers
 Invoke-Expression "cmd.exe /c $($BootStrapScript.Content)"
-#@powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
