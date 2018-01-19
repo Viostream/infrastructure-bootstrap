@@ -34,11 +34,11 @@ echo Press any key to initialise Terraform
 rem pause > nul
 set /p AWS_ACCESS_KEY_ID= AWS Access Key ID:
 set /p AWS_SECRET_ACCESS_KEY= AWS Secret Access Key:
-cmd /c terraform init
+cmd /c terraform init -var gitpass=%PASSWORD% -var gituser=%USERNAME% -var access_key=%AWS_ACCESS_KEY_ID% -var secret_key=%AWS_SECRET_ACCESS_KEY%
 echo Press any key to provision the RDS instance and it's pre-requisites
 rem pause > nul
 rem -auto-approve
-cmd /c terraform apply -target=module.db -var 'gitpass=%PASSWORD%' -var gituser=%USERNAME% -var access_key=%AWS_ACCESS_KEY_ID% -var secret_key=%AWS_SECRET_ACCESS_KEY% -auto-approve
+cmd /c terraform apply -target=module.db -var gitpass=%PASSWORD% -var gituser=%USERNAME% -var access_key=%AWS_ACCESS_KEY_ID% -var secret_key=%AWS_SECRET_ACCESS_KEY% -auto-approve
 cmd /c terraform apply -var gitpass=%PASSWORD% -var gituser=%USERNAME% -var access_key=%AWS_ACCESS_KEY_ID% -var secret_key=%AWS_SECRET_ACCESS_KEY% -auto-approve
 echo Finished script.
 rmdir /Q /S infrastructure
