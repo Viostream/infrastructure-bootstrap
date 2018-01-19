@@ -24,7 +24,6 @@ echo Press any key to install terraform and git...
 pause > nul
 choco install terraform -y
 choco install git -y
-rmdir /Q /S infrastructure
 echo.
 echo Press any key to download terraform scripts from our GitHub repository...
 pause > nul
@@ -40,6 +39,7 @@ echo Press any key to provision the RDS instance and it's pre-requisites
 pause > nul
 cmd /c terraform apply -target=module.db -var 'gitpass=%PASSWORD%'
 echo Finished script.
+rmdir /Q /S infrastructure
 echo.
 pause
 echo.
