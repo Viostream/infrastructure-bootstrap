@@ -33,6 +33,8 @@ cd infrastructure\terraform\teamcity-dev
 echo.
 echo Press any key to initialise Terraform
 pause > nul
+set /p AWS_ACCESS_KEY_ID= AWS Access Key ID:
+set /p AWS_SECRET_ACCESS_KEY= AWS Secret Access Key:
 cmd /c terraform init
 echo Press any key to provision the RDS instance and it's pre-requisites
 pause > nul
