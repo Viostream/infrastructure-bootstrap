@@ -1,6 +1,17 @@
 @echo off
 cd %TEMP%
 echo.
+echo This script will:
+echo   1. Install chocolatey package manager
+echo   2. Install terraform
+echo   3. Install git
+echo   4. Clone the Viostream Infrastructure GitHub repository
+echo   5. Use terraform to bootstrap a new AWS environment and provision TeamCity
+echo.
+echo You can cleanup the above at any stage using choco uninstall
+echo.
+echo Press any key to proceed...
+pause > nul
 echo Enter credentials to the Viostream GitHub repository...
 set /p USERNAME= GitHub Username:
 set /p PASSWORD= GitHub Password:
