@@ -17,15 +17,15 @@ rmdir /Q /S infrastructure
 echo.
 echo Press any key to download terraform scripts from our GitHub repository...
 pause > nul
-git clone https://%USERNAME%:%PASSWORD%@github.com/Viostream/infrastructure infrastructure
+cmd /c git clone https://%USERNAME%:%PASSWORD%@github.com/Viostream/infrastructure infrastructure
 cd infrastructure\terraform\teamcity-dev
 echo.
 echo Press any key to initialise Terraform
 pause > nul
-terraform init
+cmd /c terraform init
 echo Press any key to provision the RDS instance and it's pre-requisites
 pause > nul
-terraform apply -target=module.db -var 'gitpass=%PASSWORD%'
+cmd /c terraform apply -target=module.db -var 'gitpass=%PASSWORD%'
 echo Finished script.
 echo.
 pause
