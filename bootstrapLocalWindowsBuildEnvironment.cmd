@@ -17,27 +17,29 @@ set /p USERNAME= GitHub Username:
 set /p PASSWORD= GitHub Password:
 echo.
 echo Press any key to install chocolatey...
-pause > nul
+rem pause > nul
 @powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
 echo.
 echo Press any key to install terraform and git...
-pause > nul
+rem pause > nul
 choco install terraform -y
 choco install git -y
 echo.
 echo Press any key to download terraform scripts from our GitHub repository...
-pause > nul
+rem pause > nul
 cmd /c git clone https://%USERNAME%:%PASSWORD%@github.com/Viostream/infrastructure infrastructure
 cd infrastructure\terraform\teamcity-dev
 echo.
 echo Press any key to initialise Terraform
-pause > nul
+rem pause > nul
 set /p AWS_ACCESS_KEY_ID= AWS Access Key ID:
 set /p AWS_SECRET_ACCESS_KEY= AWS Secret Access Key:
 cmd /c terraform init
 echo Press any key to provision the RDS instance and it's pre-requisites
-pause > nul
-cmd /c terraform apply -target=module.db -var 'gitpass=%PASSWORD%'
+rem pause > nul
+rem -auto-approve
+cmd /c terraform apply -target=module.db -var 'gitpass=%PASSWORD%' -var gituser=%USERNAME% -auto-approve
+cmd /c terraform apply -var gitpass=%PASSWORD% -var gituser=%USERNAME% -auto-approve
 echo Finished script.
 rmdir /Q /S infrastructure
 echo.
