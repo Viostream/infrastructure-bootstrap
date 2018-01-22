@@ -74,18 +74,26 @@ $KEY_PATH = Read-Host -Prompt "Full path to an SSH private key used to build the
 $env:AWS_ACCESS_KEY_ID = $AWS_ACCESS_KEY_ID
 $env:AWS_SECRET_ACCESS_KEY = $AWS_SECRET_ACCESS_KEY
 Write-Host
-#terraform init -var gitpass=${gitPass} -var gituser=${gitUser} -var access_key=${AWS_ACCESS_KEY_ID} -var secret_key=${AWS_SECRET_ACCESS_KEY}
 terraform init
 Write-Host Provision the RDS instance and its pre-requisites
 #-auto-approve
 terraform apply -auto-approve -target="module.db" -var gitpass=$gitPass -var gituser=$gitUser -var access_key=$AWS_ACCESS_KEY_ID -var secret_key=$AWS_SECRET_ACCESS_KEY -var key_path=$KEY_PATH
-#terraform apply -auto-approve -var "gitpass=${gitPass}" -var "gituser=${gitUser}" -var "access_key=${AWS_ACCESS_KEY_ID}" -var "secret_key=${AWS_SECRET_ACCESS_KEY}" -var "key_path=${KEY_PATH}" 
+if ($LASTEXITCODE) {
+	Write-Host "Error provisioning terraform"
+	exit 1
+}
+terraform apply -auto-approve -var "gitpass=${gitPass}" -var "gituser=${gitUser}" -var "access_key=${AWS_ACCESS_KEY_ID}" -var "secret_key=${AWS_SECRET_ACCESS_KEY}" -var "key_path=${KEY_PATH}" 
+if ($LASTEXITCODE) {
+	Write-Host "Error provisioning terraform"
+	exit 1
+}
 Write-Host
-Write-Host Finished script. Cleaning up...
-Write-Host "Removing ${env:TEMP}\${workingDir}"
+#Write-Host Finished script. Cleaning up...
+#Write-Host "Removing ${env:TEMP}\${workingDir}"
 cd $env:TEMP
-Remove-Item "${env:TEMP}\${workingDir}" -Force -Recurse
-Write-Host
+Start-Process powershell
+#Remove-Item "${env:TEMP}\${workingDir}" -Force -Recurse
+Write-Host "Finished script"
 Write-Host "If you would like to uninstall terraform and git, please run:"
 Write-Host "	choco uninstall terraform git.install -y"
 Write-Host
