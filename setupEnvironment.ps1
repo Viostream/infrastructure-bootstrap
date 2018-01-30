@@ -71,20 +71,24 @@ Write-Host
 $AWS_ACCESS_KEY_ID = Read-Host -Prompt "AWS Access Key ID"
 $AWS_SECRET_ACCESS_KEY = Read-Host -Prompt "AWS Secret Access Key"
 $KEY_PATH = Read-Host -Prompt "Full path to an SSH private key used to build the TeamCity server"
-$env:AWS_ACCESS_KEY_ID = $AWS_ACCESS_KEY_ID
-$env:AWS_SECRET_ACCESS_KEY = $AWS_SECRET_ACCESS_KEY
+$env:TF_VAR_AWS_ACCESS_KEY_ID = $AWS_ACCESS_KEY_ID
+$env:TF_VAR_AWS_SECRET_ACCESS_KEY = $AWS_SECRET_ACCESS_KEY
+$env:TF_VAR_KEY_PATH = $KEY_PATH
+$env:TF_VAR_gitUser = $gitUser
+$env:TF_VAR_gitPass = $gitPass
 Write-Host
 terraform init
-Write-Host "terraform plan -destroy -out=destroy.out -var gitpass=$gitPass -var gituser=$gitUser -var access_key=$AWS_ACCESS_KEY_ID -var secret_key=$AWS_SECRET_ACCESS_KEY -var key_path=$KEY_PATH"
+Write-Host "terraform plan -destroy -out=./destroy.plan.out -var gitpass=$gitPass -var gituser=$gitUser -var access_key=$AWS_ACCESS_KEY_ID -var secret_key=$AWS_SECRET_ACCESS_KEY -var key_path=$KEY_PATH"
 terraform plan -destroy -out=destroy.out -var gitpass=$gitPass -var gituser=$gitUser -var access_key=$AWS_ACCESS_KEY_ID -var secret_key=$AWS_SECRET_ACCESS_KEY -var key_path=$KEY_PATH 
 Write-Host Provision the RDS instance and its pre-requisites
 #-auto-approve
-terraform plan -out=./rds.out -target="module.db" -var "gitpass=${gitPass}" -var "gituser=${gitUser}" -var "access_key=${AWS_ACCESS_KEY_ID}" -var "secret_key=${AWS_SECRET_ACCESS_KEY}" -var "key_path=${KEY_PATH}" 
+Write-Host 'terraform plan -out=./rds.plan.out -target="module.db" -var "gitpass=${gitPass}" -var "gituser=${gitUser}" -var "access_key=${AWS_ACCESS_KEY_ID}" -var "secret_key=${AWS_SECRET_ACCESS_KEY}" -var "key_path=${KEY_PATH}"'
+terraform plan -out=./rds.plan.out -target="module.db" -var "gitpass=${gitPass}" -var "gituser=${gitUser}" -var "access_key=${AWS_ACCESS_KEY_ID}" -var "secret_key=${AWS_SECRET_ACCESS_KEY}" -var "key_path=${KEY_PATH}" 
 if ($LASTEXITCODE) {
 	Write-Host "Error provisioning terraform RDS DB module"
 	exit 1
 }
-terraform plan -out=./therest.out -var "gitpass=${gitPass}" -var "gituser=${gitUser}" -var "access_key=${AWS_ACCESS_KEY_ID}" -var "secret_key=${AWS_SECRET_ACCESS_KEY}" -var "key_path=${KEY_PATH}" 
+terraform plan -out=./therest.plan.out -var "gitpass=${gitPass}" -var "gituser=${gitUser}" -var "access_key=${AWS_ACCESS_KEY_ID}" -var "secret_key=${AWS_SECRET_ACCESS_KEY}" -var "key_path=${KEY_PATH}" 
 if ($LASTEXITCODE) {
 	Write-Host "Error provisioning terraform"
 	exit 1
