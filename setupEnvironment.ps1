@@ -75,15 +75,15 @@ $env:AWS_ACCESS_KEY_ID = $AWS_ACCESS_KEY_ID
 $env:AWS_SECRET_ACCESS_KEY = $AWS_SECRET_ACCESS_KEY
 Write-Host
 terraform init
-terraform plan -destroy -out=./
+terraform plan -destroy -out=destroy.out -var "gitpass=${gitPass}" -var "gituser=${gitUser}" -var "access_key=${AWS_ACCESS_KEY_ID}" -var "secret_key=${AWS_SECRET_ACCESS_KEY}" -var "key_path=${KEY_PATH}" 
 Write-Host Provision the RDS instance and its pre-requisites
 #-auto-approve
-terraform plan -out=rds.out -auto-approve -target="module.db" -var gitpass=$gitPass -var gituser=$gitUser -var access_key=$AWS_ACCESS_KEY_ID -var secret_key=$AWS_SECRET_ACCESS_KEY -var key_path=$KEY_PATH
+terraform plan -out=rds.out -target="module.db" -var "gitpass=${gitPass}" -var "gituser=${gitUser}" -var "access_key=${AWS_ACCESS_KEY_ID}" -var "secret_key=${AWS_SECRET_ACCESS_KEY}" -var "key_path=${KEY_PATH}" 
 if ($LASTEXITCODE) {
-	Write-Host "Error provisioning terraform"
+	Write-Host "Error provisioning terraform RDS DB module"
 	exit 1
 }
-terraform plan -out=therest.out -auto-approve -var "gitpass=${gitPass}" -var "gituser=${gitUser}" -var "access_key=${AWS_ACCESS_KEY_ID}" -var "secret_key=${AWS_SECRET_ACCESS_KEY}" -var "key_path=${KEY_PATH}" 
+terraform plan -out=therest.out -var "gitpass=${gitPass}" -var "gituser=${gitUser}" -var "access_key=${AWS_ACCESS_KEY_ID}" -var "secret_key=${AWS_SECRET_ACCESS_KEY}" -var "key_path=${KEY_PATH}" 
 if ($LASTEXITCODE) {
 	Write-Host "Error provisioning terraform"
 	exit 1
