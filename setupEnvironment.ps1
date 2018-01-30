@@ -11,14 +11,8 @@ Write-Host   3. Install git
 Write-Host   4. Clone the Viostream Infrastructure GitHub repository
 Write-Host   5. Use terraform to bootstrap a new AWS environment and provision TeamCity
 Write-Host
-Write-Host You can cleanup the above at any stage using choco uninstall
+Write-Host You can cleanup this installation at any stage using \"choco uninstall terraform git.install -y\"
 Write-Host
-Write-Host Enter credentials to the Viostream GitHub repository...
-Write-Host
-$gitUser = Read-Host -Prompt "GitHub username"
-$gitPass = Read-Host -Prompt "GitHub password" -AsSecureString
-$BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($gitPass)
-$gitPass = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
 
 try { 
 	$chocoCmd = Get-Command choco -ErrorAction Stop
@@ -33,7 +27,6 @@ try {
 	}
 } 
 
-#git.install 
 $chocoCmd = choco list --localonly | Where {$_ -like 'git.install *'}
 if (!($chocoCmd)) {
 	Write-Host
@@ -42,6 +35,20 @@ if (!($chocoCmd)) {
 	refreshenv
 }
 
+$chocoCmd = choco list --localonly | Where {$_ -like 'terraform *'}
+if (!($chocoCmd)) {
+	Write-Host
+	Write-Host Choco package terraform not found. Installing...
+	iex ("choco install terraform -y") -ErrorAction Stop
+	refreshenv
+}
+
+Write-Host Enter credentials to the Viostream GitHub repository...
+Write-Host
+$gitUser = Read-Host -Prompt "GitHub username"
+$gitPass = Read-Host -Prompt "GitHub password" -AsSecureString
+$BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($gitPass)
+$gitPass = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
 Write-Host
 Write-Host Downloading terraform scripts from our GitHub repository...
 if (Test-Path .\$workingDir) {
@@ -56,51 +63,50 @@ if ($LASTEXITCODE) {
 		exit 1
 }
 
-$chocoCmd = choco list --localonly | Where {$_ -like 'terraform *'}
-if (!($chocoCmd)) {
-	Write-Host
-	Write-Host Choco package terraform not found. Installing...
-	iex ("choco install terraform -y") -ErrorAction Stop
-	refreshenv
-}
 
-cd ${workingDir}\terraform\teamcity-dev
 Write-Host
-Write-Host Initialising Terraform. Enter AWS environment parameters...
+Write-Host Bootstrapping AWS environment using Terraform. Enter AWS parameters...
 Write-Host
 $AWS_ACCESS_KEY_ID = Read-Host -Prompt "AWS Access Key ID"
 $AWS_SECRET_ACCESS_KEY = Read-Host -Prompt "AWS Secret Access Key"
 $KEY_PATH = Read-Host -Prompt "Full path to an SSH private key used to build the TeamCity server"
-$env:TF_VAR_AWS_ACCESS_KEY_ID = $AWS_ACCESS_KEY_ID
-$env:TF_VAR_AWS_SECRET_ACCESS_KEY = $AWS_SECRET_ACCESS_KEY
-$env:TF_VAR_KEY_PATH = $KEY_PATH
-$env:TF_VAR_gitUser = $gitUser
-$env:TF_VAR_gitPass = $gitPass
+$env:AWS_ACCESS_KEY_ID = $AWS_ACCESS_KEY_ID
+$env:AWS_SECRET_ACCESS_KEY = $AWS_SECRET_ACCESS_KEY
+$env:TF_VAR_access_key = $AWS_ACCESS_KEY_ID
+$env:TF_VAR_secret_key = $AWS_SECRET_ACCESS_KEY
+$env:TF_VAR_key_path = $KEY_PATH
+$env:TF_VAR_gituser = $gitUser
+$env:TF_VAR_gitpass = $gitPass
+
 Write-Host
+cd ${workingDir}\terraform\teamcity-dev
 terraform init
-Write-Host "terraform plan -destroy -out=./destroy.plan.out -var gitpass=$gitPass -var gituser=$gitUser -var access_key=$AWS_ACCESS_KEY_ID -var secret_key=$AWS_SECRET_ACCESS_KEY -var key_path=$KEY_PATH"
-terraform plan -destroy -out=destroy.out -var gitpass=$gitPass -var gituser=$gitUser -var access_key=$AWS_ACCESS_KEY_ID -var secret_key=$AWS_SECRET_ACCESS_KEY -var key_path=$KEY_PATH 
-Write-Host Provision the RDS instance and its pre-requisites
-#-auto-approve
-Write-Host 'terraform plan -out=./rds.plan.out -target="module.db" -var "gitpass=${gitPass}" -var "gituser=${gitUser}" -var "access_key=${AWS_ACCESS_KEY_ID}" -var "secret_key=${AWS_SECRET_ACCESS_KEY}" -var "key_path=${KEY_PATH}"'
-terraform plan -out=./rds.plan.out -target="module.db" -var "gitpass=${gitPass}" -var "gituser=${gitUser}" -var "access_key=${AWS_ACCESS_KEY_ID}" -var "secret_key=${AWS_SECRET_ACCESS_KEY}" -var "key_path=${KEY_PATH}" 
+Write-Host Destroying existing infrastructure
+#terraform plan -destroy -out./destroy.plan.out
+terraform destroy
+#terraform plan -out=./rds.plan.out -target="module.db" -var "gitpass=${gitPass}" -var "gituser=${gitUser}" -var "access_key=${AWS_ACCESS_KEY_ID}" -var "secret_key=${AWS_SECRET_ACCESS_KEY}" -var "key_path=${KEY_PATH}" 
+
+Write-Host Provisioning RDS instance
+#terraform plan -out="./rds.plan.out" -target="module.db"
+terraform apply -target="module.db"
 if ($LASTEXITCODE) {
-	Write-Host "Error provisioning terraform RDS DB module"
+	Write-Host "Error provisioning teamcity RDS instance"
 	exit 1
 }
-terraform plan -out=./therest.plan.out -var "gitpass=${gitPass}" -var "gituser=${gitUser}" -var "access_key=${AWS_ACCESS_KEY_ID}" -var "secret_key=${AWS_SECRET_ACCESS_KEY}" -var "key_path=${KEY_PATH}" 
+
+Write-Host Provisioning the rest of the teamcity infrastructure
+terraform apply
 if ($LASTEXITCODE) {
-	Write-Host "Error provisioning terraform"
+	Write-Host "Error provisioning teamcity"
 	exit 1
 }
 Write-Host
-#Write-Host Finished script. Cleaning up...
-#Write-Host "Removing ${env:TEMP}\${workingDir}"
 cd $env:TEMP
+#cd ${workingDir}\terraform\teamcity-dev
 #Start-Process powershell
-Start-Process cmd -ArgumentList "cd ${workingDir}\terraform\teamcity-dev"
-#Remove-Item "${env:TEMP}\${workingDir}" -Force -Recurse
-Write-Host "Finished script"
+Start-Process cmd -ArgumentList "cd $workingDir\terraform\teamcity-dev"
+Write-Host "End of script"
+Write-Host
 Write-Host "If you would like to uninstall terraform and git, please run:"
 Write-Host "	choco uninstall terraform git.install -y"
 Write-Host
