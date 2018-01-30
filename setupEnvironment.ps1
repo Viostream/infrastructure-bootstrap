@@ -50,7 +50,7 @@ if (Test-Path .\$workingDir) {
 }
 
 #git clone "https://${gitUser}:${gitPass}@github.com/Viostream/infrastructure" ${workingDir} 2>Out-Null
-cmd /c "refreshenv && git clone https://github.com/Viostream/infrastructure ${workingDir} 2>NUL"
+cmd /c "refreshenv && git clone https://${gitUser}:${gitPass}@github.com/Viostream/infrastructure ${workingDir} 2>NUL"
 if ($LASTEXITCODE) {
 		Write-Host "Error running: git clone https://github.com/Viostream/infrastructure ${workingDir}"
 		exit 1
