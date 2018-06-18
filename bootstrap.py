@@ -8,7 +8,7 @@ import requests
 import subprocess
 from requests.auth import HTTPBasicAuth
 
-url = 'https://raw.githubusercontent.com/Viostream/infrastructure/master/Viostream.Pexip.Plugin.1.0.0.21.0.tar'
+url = 'https://raw.githubusercontent.com/Viostream/infrastructure/master/Viostream.Pexip.Plugin.1.0.0.21.tar'
 #tarfilename = '/home/admin/Viostream.Pexip.Plugin.1.0.0.21.tar'
 extractpath = '/home/admin/tmp'
 
