@@ -6,14 +6,15 @@
 
 import requests
 import subprocess
+import getpass
 from requests.auth import HTTPBasicAuth
 
 url = 'https://raw.githubusercontent.com/Viostream/infrastructure/master/Viostream.Pexip.Plugin.1.0.0.21.tar'
-#tarfilename = '/home/admin/Viostream.Pexip.Plugin.1.0.0.21.tar'
 extractpath = '/home/admin/tmp'
 
-username = raw_input("Github username? ")
-password = raw_input("Github password? ")
+username = raw_input('Github username: ')
+#password = raw_input('Github password: ')
+password = getpass.getpass('Password: ')
 
 if url.find('/'):
   filename = url.rsplit('/', 1)[1]
